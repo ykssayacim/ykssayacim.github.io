@@ -58,10 +58,10 @@
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
       countdownElement.innerHTML =
-        days + "" "Gün " +
-        hours + "" " Saat " +
-        minutes + "" "Dakika " +
-        seconds + "" "Saniye";
+        days + "G " +
+        hours + "S " +
+        minutes + "D " +
+        seconds + "Sn";
 
       if (days <= 30) {
         countdownElement.classList.add("warning");
