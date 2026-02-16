@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YKS Geri Sayım</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: black;
+      color: white;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+
+    #countdown {
+      font-size: 8vw; /* Telefona uyumlu */
+      font-weight: bold;
+    }
+
+    .warning {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="countdown"></div>
+
+  <script>
+    const yksDate = new Date("June 20, 2026 10:15:00").getTime();
+    const countdownElement = document.getElementById("countdown");
+
+    setInterval(function () {
+
+      const now = new Date().getTime();
+      const distance = yksDate - now;
+
+      if (distance <= 0) {
+        countdownElement.innerHTML = "YKS BAŞLADI";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      countdownElement.innerHTML =
+        days + "G " +
+        hours + "S " +
+        minutes + "D " +
+        seconds + "Sn";
+
+      if (days <= 30) {
+        countdownElement.classList.add("warning");
+      }
+
+    }, 1000);
+  </script>
+
+</body>
+</html>
