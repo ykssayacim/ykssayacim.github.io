@@ -27,7 +27,7 @@
     }
 
     .time {
-      font-size: 7.5vw;
+      font-size: 9vw;
       font-weight: bold;
       line-height: 1.3;
     }
@@ -41,12 +41,11 @@
 <body>
 
   <div id="container">
-    <div class="time" id="days"></div>
-    <div class="time" id="hours"></div>
-    <div class="time" id="minutes"></div>
-    <div class="time" id="seconds"></div>
-    <div class="time" id="centiseconds"></div>
-    <div class="time" id="milliseconds"></div>
+    <div class="time" id="days">-- Gün</div>
+    <div class="time" id="hours">-- Saat</div>
+    <div class="time" id="minutes">-- Dakika</div>
+    <div class="time" id="seconds">-- Saniye</div>
+    <div class="time" id="milliseconds">-- Salise</div>
   </div>
 
   <script>
@@ -56,11 +55,10 @@
     const hoursEl = document.getElementById("hours");
     const minutesEl = document.getElementById("minutes");
     const secondsEl = document.getElementById("seconds");
-    const csEl = document.getElementById("centiseconds");
     const msEl = document.getElementById("milliseconds");
 
     function updateCountdown() {
-      const now = Date.now();
+      const now = new Date().getTime();
       const distance = yksDate - now;
 
       if (distance <= 0) {
@@ -74,15 +72,13 @@
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-      const milliseconds = distance % 1000;        // 0–999
-      const centiseconds = Math.floor(milliseconds / 10); // 0–99 (salise)
+      const milliseconds = Math.floor((distance % 1000) / 10); // 00-99
 
       daysEl.innerHTML = days + " Gün";
       hoursEl.innerHTML = hours + " Saat";
       minutesEl.innerHTML = minutes + " Dakika";
       secondsEl.innerHTML = seconds + " Saniye";
-      csEl.innerHTML = centiseconds + " Salise";
-      msEl.innerHTML = milliseconds + " ms";
+      msEl.innerHTML = milliseconds + " Salise";
 
       if (days <= 30) {
         document.querySelectorAll(".time").forEach(el =>
