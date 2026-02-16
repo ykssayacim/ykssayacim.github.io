@@ -27,7 +27,7 @@
     }
 
     .time {
-      font-size: 8vw;
+      font-size: 7.5vw;
       font-weight: bold;
       line-height: 1.3;
     }
@@ -45,6 +45,7 @@
     <div class="time" id="hours"></div>
     <div class="time" id="minutes"></div>
     <div class="time" id="seconds"></div>
+    <div class="time" id="centiseconds"></div>
     <div class="time" id="milliseconds"></div>
   </div>
 
@@ -55,6 +56,7 @@
     const hoursEl = document.getElementById("hours");
     const minutesEl = document.getElementById("minutes");
     const secondsEl = document.getElementById("seconds");
+    const csEl = document.getElementById("centiseconds");
     const msEl = document.getElementById("milliseconds");
 
     function updateCountdown() {
@@ -71,12 +73,15 @@
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      const milliseconds = distance % 1000; // 0-999
+
+      const milliseconds = distance % 1000;        // 0–999
+      const centiseconds = Math.floor(milliseconds / 10); // 0–99 (salise)
 
       daysEl.innerHTML = days + " Gün";
       hoursEl.innerHTML = hours + " Saat";
       minutesEl.innerHTML = minutes + " Dakika";
       secondsEl.innerHTML = seconds + " Saniye";
+      csEl.innerHTML = centiseconds + " Salise";
       msEl.innerHTML = milliseconds + " ms";
 
       if (days <= 30) {
@@ -87,7 +92,7 @@
     }
 
     updateCountdown();
-    setInterval(updateCountdown, 10); // 10ms update
+    setInterval(updateCountdown, 10);
   </script>
 
 </body>
