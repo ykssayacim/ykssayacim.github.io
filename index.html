@@ -1,95 +1,244 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YKS Geri Sayım</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YKS 2027 // GERİ SAYIM</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap');
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  :root{
+    --black:#050505;
+    --red:#ff1e2d;
+    --red-dim:#5c0b12;
+    --white:#f2f2f2;
+    --gray:#666;
+  }
 
-    body {
-      background: black;
-      color: white;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: Arial, sans-serif;
-    }
+  *{margin:0;padding:0;box-sizing:border-box;}
 
-    #container {
-      text-align: center;
-    }
+  body{
+    background:var(--black);
+    color:var(--white);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    font-family:'Oswald',sans-serif;
+    overflow:hidden;
+    position:relative;
+  }
 
-    .time {
-      font-size: 9vw;
-      font-weight: bold;
-      line-height: 1.3;
-    }
+  /* subtle scanlines */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.025) 0px,
+      rgba(255,255,255,0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events:none;
+    z-index:5;
+  }
 
-    .warning {
-      color: red;
-    }
-  </style>
+  /* moving noise/grid backdrop */
+  .grid-bg{
+    position:fixed;
+    inset:-2px;
+    background-image:
+      linear-gradient(var(--red-dim) 1px, transparent 1px),
+      linear-gradient(90deg, var(--red-dim) 1px, transparent 1px);
+    background-size:48px 48px;
+    opacity:0.15;
+    z-index:0;
+    animation:gridshift 12s linear infinite;
+  }
+  @keyframes gridshift{
+    0%{transform:translate(0,0);}
+    100%{transform:translate(48px,48px);}
+  }
+
+  #container{
+    position:relative;
+    z-index:10;
+    text-align:center;
+    padding:0 4vw;
+  }
+
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:0.5em;
+    font-size:clamp(11px,1.4vw,15px);
+    color:var(--red);
+    margin-bottom:1.4rem;
+    text-transform:uppercase;
+    animation:blink 2s steps(1) infinite;
+  }
+  @keyframes blink{
+    0%,49%{opacity:1;}
+    50%,100%{opacity:0.3;}
+  }
+
+  .grid-times{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:clamp(10px,2vw,28px);
+  }
+
+  .unit{
+    position:relative;
+    border:1px solid #2a2a2a;
+    padding:clamp(14px,2.2vw,28px) clamp(6px,1.4vw,18px);
+    background:linear-gradient(180deg, rgba(255,30,45,0.04), transparent);
+  }
+  .unit::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;
+    height:2px;
+    background:var(--red);
+    box-shadow:0 0 12px 1px var(--red);
+  }
+
+  .value{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:800;
+    font-size:clamp(2.6rem,8vw,6.5rem);
+    line-height:1;
+    color:var(--white);
+    letter-spacing:-0.02em;
+    text-shadow:0 0 22px rgba(255,30,45,0.35);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .label{
+    margin-top:0.6rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(10px,1.2vw,13px);
+    letter-spacing:0.35em;
+    color:var(--gray);
+    text-transform:uppercase;
+  }
+
+  .ms{
+    color:var(--red);
+  }
+
+  .critical .value{ color:var(--red); animation:pulse 0.6s infinite; }
+  .critical .label{ color:var(--red); }
+  .critical::before{ animation:flash 0.6s infinite; }
+  @keyframes pulse{
+    0%,100%{ text-shadow:0 0 22px rgba(255,30,45,0.5); }
+    50%{ text-shadow:0 0 40px rgba(255,30,45,0.9); }
+  }
+  @keyframes flash{
+    0%,100%{opacity:1;}
+    50%{opacity:0.3;}
+  }
+
+  .footer-note{
+    margin-top:2.4rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(10px,1.1vw,13px);
+    color:var(--gray);
+    letter-spacing:0.12em;
+    border-top:1px solid #2a2a2a;
+    padding-top:0.9rem;
+    display:inline-block;
+  }
+  .footer-note span{ color:var(--red); font-weight:600; }
+
+  .started{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(2rem,7vw,5rem);
+    color:var(--red);
+    font-weight:800;
+    text-shadow:0 0 30px rgba(255,30,45,0.8);
+  }
+
+  @media (max-width:640px){
+    .grid-times{ grid-template-columns:repeat(2,1fr); }
+  }
+</style>
 </head>
-
 <body>
 
+  <div class="grid-bg"></div>
+
   <div id="container">
-    <div class="time" id="days">-- Gün</div>
-    <div class="time" id="hours">-- Saat</div>
-    <div class="time" id="minutes">-- Dakika</div>
-    <div class="time" id="seconds">-- Saniye</div>
-    <div class="time" id="milliseconds">-- Salise</div>
+    <div class="eyebrow">// HEDEF: ÜNİVERSİTE &nbsp;·&nbsp; DURUM: AKTİF //</div>
+
+    <div class="grid-times">
+      <div class="unit">
+        <div class="value" id="days">--</div>
+        <div class="label">Gün</div>
+      </div>
+      <div class="unit">
+        <div class="value" id="hours">--</div>
+        <div class="label">Saat</div>
+      </div>
+      <div class="unit">
+        <div class="value" id="minutes">--</div>
+        <div class="label">Dakika</div>
+      </div>
+      <div class="unit">
+        <div class="value ms" id="seconds">--</div>
+        <div class="label">Saniye</div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      ⚠ TAHMİNİ TARİH — <span>19 HAZİRAN 2027, 10:15</span> — ÖSYM RESMİ TAKVİMİ AÇIKLANMADI
+    </div>
   </div>
 
-  <script>
-    const yksDate = new Date("June 20, 2026 10:15:00").getTime();
+<script>
+  // NOT: ÖSYM 2027 YKS tarihini henüz resmi olarak açıklamadı.
+  // Geçmiş yıllara göre tahmini tarih: 19 Haziran 2027 (Cumartesi), saat 10:15
+  // Resmi tarih açıklandığında bu satırı güncelleyin.
+  const yksDate = new Date("June 19, 2027 10:15:00").getTime();
 
-    const daysEl = document.getElementById("days");
-    const hoursEl = document.getElementById("hours");
-    const minutesEl = document.getElementById("minutes");
-    const secondsEl = document.getElementById("seconds");
-    const msEl = document.getElementById("milliseconds");
+  const daysEl = document.getElementById("days");
+  const hoursEl = document.getElementById("hours");
+  const minutesEl = document.getElementById("minutes");
+  const secondsEl = document.getElementById("seconds");
+  const container = document.getElementById("container");
+  const unitEls = document.querySelectorAll(".unit");
 
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = yksDate - now;
+  function pad(n){ return String(n).padStart(2,"0"); }
 
-      if (distance <= 0) {
-        document.getElementById("container").innerHTML =
-          '<div class="time">YKS BAŞLADI</div>';
-        return;
-      }
+  function updateCountdown(){
+    const now = new Date().getTime();
+    const distance = yksDate - now;
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      const milliseconds = Math.floor((distance % 1000) / 10); // 00-99
-
-      daysEl.innerHTML = days + " Gün";
-      hoursEl.innerHTML = hours + " Saat";
-      minutesEl.innerHTML = minutes + " Dakika";
-      secondsEl.innerHTML = seconds + " Saniye";
-      msEl.innerHTML = milliseconds + " Salise";
-
-      if (days <= 30) {
-        document.querySelectorAll(".time").forEach(el =>
-          el.classList.add("warning")
-        );
-      }
+    if(distance <= 0){
+      container.innerHTML = '<div class="started">YKS BAŞLADI</div>';
+      return;
     }
 
-    updateCountdown();
-    setInterval(updateCountdown, 10);
-  </script>
+    const days = Math.floor(distance / (1000*60*60*24));
+    const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
+    const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
+    const seconds = Math.floor((distance % (1000*60)) / 1000);
+
+    daysEl.textContent = pad(days);
+    hoursEl.textContent = pad(hours);
+    minutesEl.textContent = pad(minutes);
+    secondsEl.textContent = pad(seconds);
+
+    if(days <= 30){
+      unitEls.forEach(el => el.classList.add("critical"));
+    }
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
 
 </body>
 </html>
